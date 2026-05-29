@@ -1,0 +1,24 @@
+{
+  "indices": [
+    {
+      "ticker": "^GSPC",
+      "index_name": "S&P 500",
+      "description": "Tracks 500 large cap US stocks across all sectors"
+    },
+    {
+      "ticker": "^IXIC",
+      "index_name": "NASDAQ Composite",
+      "description": "Tracks all stocks listed on NASDAQ, heavily weighted toward technology"
+    },
+    {
+      "ticker": "^DJI",
+      "index_name": "Dow Jones Industrial Average",
+      "description": "Tracks 30 large blue chip US companies across major industries"
+    },
+    {
+      "ticker": "^VIX",
+      "index_name": "CBOE Volatility Index",
+      "description": "Measures market expectation of near term volatility, known as the fear index"
+    }
+  ]
+}

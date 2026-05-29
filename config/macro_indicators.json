@@ -1,0 +1,39 @@
+{
+  "indicators": [
+    {
+      "series_id": "FEDFUNDS",
+      "indicator_name": "Federal Funds Rate",
+      "description": "The interest rate at which banks lend reserve balances to other banks overnight, set by the Federal Reserve",
+      "unit": "Percentage",
+      "frequency": "monthly"
+    },
+    {
+      "series_id": "CPIAUCSL",
+      "indicator_name": "Consumer Price Index",
+      "description": "Measures the average change in prices paid by urban consumers for goods and services, used as the primary inflation indicator",
+      "unit": "Index",
+      "frequency": "monthly"
+    },
+    {
+      "series_id": "UNRATE",
+      "indicator_name": "Unemployment Rate",
+      "description": "Percentage of the total labor force that is unemployed and actively seeking employment",
+      "unit": "Percentage",
+      "frequency": "monthly"
+    },
+    {
+      "series_id": "GDP",
+      "indicator_name": "Gross Domestic Product",
+      "description": "Total monetary value of all goods and services produced in the United States",
+      "unit": "Billions of USD",
+      "frequency": "quarterly"
+    },
+    {
+      "series_id": "DGS10",
+      "indicator_name": "10-Year Treasury Yield",
+      "description": "Yield on 10 year US government bonds, benchmark for mortgage rates and economic confidence",
+      "unit": "Percentage",
+      "frequency": "daily"
+    }
+  ]
+}
