@@ -30,13 +30,15 @@ class BaseIngestion(ABC):
         self.spark = spark
 
     def run(self):
-
-        raw_df = self.extract_with_retry()
-        transformed_df = self.transform(raw_df)
-        self.load(transformed_df)
+        if self.config["run_type"] == "historical":
+            raw_df = self.extract_with_api()
+        else:
+            for raw_df in self.extract():
+                transformed_df = self.transform(raw_df)
+                self.load(transformed_df)
 
     @retry(times=4)
-    def extract_with_retry(self):
+    def extract_with_api(self):
         return self.extract()
 
     @abstractmethod
