@@ -3,7 +3,7 @@ import json
 from ingestion.main import BaseIngestion
 from datetime import timedelta
 
-class DailyStockIngestion(BaseIngestion):
+class QuaterlyCompanyFundamentalIngestion(BaseIngestion):
 
     def __init__(self,config=None,spark=None):
         self.config = config
@@ -13,22 +13,16 @@ class DailyStockIngestion(BaseIngestion):
         with open(self.config['path'],'r') as file:
             records = json.load(file)[self.config['source_type']]
             for record in records:
-                ticker, sector, industry = record['ticker'], record['sector'], record['industry']
+                ticker = record['ticker']
                 stock = yf.Ticker(ticker)
-                today = self.config['today_date']
-                tomorrow = today + timedelta(1)
-                df = stock.history(start=str(today), end=str(tomorrow), auto_adjust=False)
-                df['ticker'], df['sector'], df['industry'] = ticker, sector, industry
+                financials = stock.quarterly_financials
+                df = financials.iloc[:, 0]
                 yield df
 
     def transform(self, df):
-        columns = df.columns
         data = {}
-        for col in columns:
-            value = df[col].iloc[0]
-            if hasattr(value,'item'):
-                value = value.item()
-            data[col] = value
+        for index,value in df.items():
+            data[index] = value
         return data
 
     def load(self,df):

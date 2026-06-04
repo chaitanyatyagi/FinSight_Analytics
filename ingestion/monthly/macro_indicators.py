@@ -3,7 +3,7 @@ import requests
 from ingestion.main import BaseIngestion
 from datetime import timedelta
 
-class DailyMacroIndicatorsIngestion(BaseIngestion):
+class MonthlyMacroIndicatorsIngestion(BaseIngestion):
 
     def __init__(self,config=None,spark=None):
         self.config = config
@@ -22,7 +22,7 @@ class DailyMacroIndicatorsIngestion(BaseIngestion):
                     "file_type":         "json",
                     "observation_start": self.config['start_date'],
                     "observation_end":   self.config['end_date'],
-                    "frequency":         'd',
+                    "frequency":         'm',
                     "unit":              record['unit'],
                     "sort_order":        "desc",
                 }

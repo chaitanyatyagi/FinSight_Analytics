@@ -1,34 +1,26 @@
 import json
 import os
+import requests
 import yfinance as yf
-from datetime import date, timedelta
+from datetime import date
 
-output_file = "./data/landing_zone/daily/stocks.jsonl"
+output_file = "./data/landing_zone/daily/market_indices.jsonl"
 os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
 def main():
-    with open("./config/stocks.json",'r') as f:
-        data = json.load(f)['stocks']
-        for record in data:
+    with open('./config/stocks.json','r') as f:
+        records = json.load(f)['stocks']
+        for record in records:
+            data = {}
             ticker, sector, industry = record['ticker'], record['sector'], record['industry']
             stock = yf.Ticker(ticker)
-            today = '2026-06-03'
-            tomorrow = '2026-06-04'
-            df = stock.history(start=str(today), end=str(tomorrow), auto_adjust=False)
-            df['ticker'] = ticker
-            df['sector'] = sector
-            df['industry'] = industry
-            
-            columns = df.columns
-            final_df = {}
-            for col in columns:
-                value = df[col].iloc[0]
-                if hasattr(value,'item'):
-                    value = value.item()
-                final_df[col] = value
-            
-            with open(output_file,'a') as f:
-                f.write(json.dumps(final_df)+'\n')
-                print("record successfully written !!")
+            info = stock.info
+            financials = stock.quarterly_financials
+            df = financials.iloc[:, 0]
+            for idx,val in df.items():
+                data[idx] = val
+            with open('./data/landing_zone/quaterly/company_fundamentals.jsonl','a') as f:
+                f.write(json.dumps(data)+'\n')
+                print("successfully written !!")
 
 main()

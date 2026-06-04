@@ -3,7 +3,7 @@ import requests
 from ingestion.main import BaseIngestion
 from datetime import timedelta
 
-class DailyMacroIndicatorsIngestion(BaseIngestion):
+class QuaterlyMacroIndicatorsIngestion(BaseIngestion):
 
     def __init__(self,config=None,spark=None):
         self.config = config
@@ -14,7 +14,7 @@ class DailyMacroIndicatorsIngestion(BaseIngestion):
             data = []
             records = json.load(file)[self.config['source_type']]
             for record in records:
-                if record['frequency'] != 'daily': continue
+                if record['frequency'] != 'quarterly': continue
                 url = "https://api.stlouisfed.org/fred/series/observations"
                 params = {
                     "series_id":         record['series_id'],
@@ -22,7 +22,7 @@ class DailyMacroIndicatorsIngestion(BaseIngestion):
                     "file_type":         "json",
                     "observation_start": self.config['start_date'],
                     "observation_end":   self.config['end_date'],
-                    "frequency":         'd',
+                    "frequency":         'q',
                     "unit":              record['unit'],
                     "sort_order":        "desc",
                 }

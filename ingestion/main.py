@@ -30,8 +30,10 @@ class BaseIngestion(ABC):
         self.spark = spark
 
     def run(self):
-        if self.config["run_type"] == "historical":
+        if self.config["extract_type"] == "api":
             raw_df = self.extract_with_api()
+            transformed_df = self.transform(raw_df)
+            self.load(transformed_df)
         else:
             for raw_df in self.extract():
                 transformed_df = self.transform(raw_df)
