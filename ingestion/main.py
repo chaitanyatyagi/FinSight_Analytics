@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import wraps
+import inspect
 import time
 
 
@@ -27,13 +28,22 @@ class BaseIngestion(ABC):
         self.spark = spark
 
     def run(self):
-        raw_data = self.extract()
-        transformed_data = self.transform(
-            raw_data
-        )
-        self.load(
-            transformed_data
-        )
+        # If extract() is a generator function (uses yield), transform each
+        # yielded item and accumulate results, then call load() ONCE with the
+        # full batch. This ensures the output file is opened only once per run
+        # — making file mode ('w' or 'a') behave correctly regardless of how
+        # many items are yielded.
+        # If extract() returns a batch (list/dict), process it all at once.
+        if inspect.isgeneratorfunction(self.extract):
+            transformed_data = [
+                self.transform(raw_item)
+                for raw_item in self.extract()
+            ]
+            self.load(transformed_data)
+        else:
+            raw_data = self.extract()
+            transformed_data = self.transform(raw_data)
+            self.load(transformed_data)
 
     @abstractmethod
     def extract(self):
