@@ -1,32 +1,53 @@
-import requests
 import json
-from ingestion.main import BaseIngestion
-from datetime import timedelta
+import requests
+from ingestion.main import (
+    BaseIngestion,
+    retry
+)
 
-class AnuallyHolidayIngestion(BaseIngestion):
 
-    def __init__(self,config=None,spark=None):
-        self.config = config
-        self.spark = spark
+class AnnuallyHolidayIngestion(BaseIngestion):
 
+    def __init__(
+        self,
+        config,
+        spark=None,
+    ):
+        super().__init__(
+            config,
+            spark,
+        )
+
+    @retry(times=4, delay=2)
     def extract(self):
-        response = requests.get(f'https://date.nager.at/api/v3/PublicHolidays/{self.config['year']}/US')
+        year = self.config["year"]
+        response = requests.get(
+            f"https://date.nager.at/api/v3/PublicHolidays/{year}/US",
+            timeout=30,
+        )
         response.raise_for_status()
-        data = response.json()
-        return data
+        return response.json()
 
-    def transform(self, df):
-        final_df = []
-        for record in df:
-            data = {}
-            for col in record:
-                if col in ('date','name'):
-                    data[col] = df[col]
-            final_df.append(data)
-        return final_df
+    def transform(self, records):
+        return [
+            {
+                "date": record["date"],
+                "name": record["name"],
+            }
+            for record in records
+        ]
 
-    def load(self,df):
-        with open(self.config.output_path,'a') as f:
-            for record in df:
-                f.write(json.dumps(record)+'\n')
-        
+    def load(self, records):
+        output_path = self.config[
+            "output_path"
+        ]
+        with open(
+            output_path,
+            "w",
+            encoding="utf-8",
+        ) as file:
+            for record in records:
+                file.write(
+                    json.dumps(record)
+                    + "\n"
+                )
